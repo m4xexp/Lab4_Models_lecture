@@ -6,7 +6,6 @@ from report.models import *
 
 from .DBHelper import DBHelper
 
-# Create your views here.
 def index(request):
     invoice_no = request.GET.get('inv','')
     data_report = dict()
@@ -14,6 +13,7 @@ def index(request):
     data_report['invoice_line_item'] = list(InvoiceLineItem.objects.filter(invoice_no=invoice_no).values())
     #return JsonResponse(data_report)
     return render(request, 'report_data.html', data_report)
+
 
 def ReportListAllInvoices(request):
     db = DBHelper()

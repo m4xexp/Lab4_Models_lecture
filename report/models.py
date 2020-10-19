@@ -5,6 +5,7 @@ class Data(models.Model):
     key = models.CharField(max_length=10,primary_key=True)
     value = models.CharField(max_length=100)
 
+
 class Product(models.Model):
     code = models.CharField(max_length=10,primary_key=True)
     name = models.CharField(max_length=100)
