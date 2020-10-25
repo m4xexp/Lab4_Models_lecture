@@ -54,23 +54,22 @@ def ReportUnpaidInvoices(request):
 
     return render(request, 'report_unpaid_invoice.html', data_report)
 
-def ReportDateAmountReceived(request):
+def ReportDateProductSold(request):
     db = DBHelper()
-    data, columns = db.fetch (' SELECT "Date", "Customer Name", "Invoice Amount Received" '
-                              ' FROM(SELECT i.date as "Date", c.customer_code as "Customer Code", c.name as "Customer Name", '
-		                      ' i.invoice_no as "Invoice No","Invoice Amount Received" '
-		                      ' FROM (SELECT rli.invoice_no as "Invoice No", SUM(rli.amount_paid_here) as "Invoice Amount Received" '
-	  		                  ' FROM receipt_line_item as rli '
-	                          ' GROUP BY rli.invoice_no ) as li '
-			                  ' JOIN invoice as i '
-	                          ' ON li."Invoice No" = i.invoice_no '
-                              ' JOIN customer as c '
-	                          ' ON i.customer_code = c.customer_code) as CD ')
+    data, columns = db.fetch (' SELECT i.date as "Date", p.name as "Product Name", SUM(ili.quantity) as "Total Sold", p.units as "Unit", '
+		                      ' SUM(ili.extended_price) as "Total Extended Price"  '
+                              ' FROM product p JOIN invoice_line_item ili ON p.code = ili.product_code '
+		                      ' JOIN invoice i ON i.invoice_no = ili.invoice_no '
+	                          ' GROUP BY i.date,p.name,p.units '
+                              ' ORDER BY i.date ASC ' 
+                              '')
+
+
     data_report = dict()
     data_report['data'] = CursorToDict (data,columns)
     data_report['column_name'] = columns
 
-    return render(request, 'report_date_amount_received.html', data_report)
+    return render(request, 'report_date_product_sold.html', data_report)
 
 def CursorToDict(data,columns):
     result = []

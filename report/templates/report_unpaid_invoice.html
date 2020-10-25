@@ -27,9 +27,14 @@
     {% endfor %}
 
     {% for lineitem in data1 %}
-    <tfoot style="text-align: center;">
-        <tr style="align-items: center;">
-            <td>Total Dept</td>
+    <tfoot>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>Total Dept</td>
             <td>{{lineitem.total_dept}}</td>
         </tr>
     </tfoot>
