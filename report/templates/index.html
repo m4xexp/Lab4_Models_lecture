@@ -4,14 +4,15 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src='/static/cpe.js'></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" >
     <link rel='stylesheet' href='/static/cpe.css'>
 </head>
 <body>
-    <H1>Report Invoice.</H1>
+    <H1>Report Receipts.</H1>
     <ul class="nav">
-        <li><a href="ReportListAllInvoices">Report list all invoices</a></li>
-        <li><a href="ReportProductsSold">Report products sold</a></li>
-        <li><a href="ReportListAllProducts">Report list all products</a></li>
+        <li><a href="ReportListAllReceipt">Report list all receipts</a></li>
+        <li><a href="ReportUnpaidInvoices">Report Unpaid invoices</a></li>
+        <li><a href="ReportProductsSold">Report list all products</a></li>
     </ul>
     {% block content %}
     {% endblock %}

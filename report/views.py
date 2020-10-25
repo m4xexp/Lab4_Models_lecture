@@ -7,46 +7,63 @@ from report.models import *
 from .DBHelper import DBHelper
 
 def index(request):
-    invoice_no = request.GET.get('inv','')
-    data_report = dict()
-    data_report['invoice'] = list(Invoice.objects.filter(invoice_no=invoice_no).select_related('customer_code').values('invoice_no', 'date', 'customer_code_id', 'customer_code__name','due_date','total','vat','amount_due'))
-    data_report['invoice_line_item'] = list(InvoiceLineItem.objects.filter(invoice_no=invoice_no).values())
-    #return JsonResponse(data_report)
-    return render(request, 'report_data.html', data_report)
+    return render(request, 'index.html')
 
 
-def ReportListAllInvoices(request):
+def ReportListAllReceipts(request):
     db = DBHelper()
-    data, columns = db.fetch ('SELECT i.invoice_no as "Invoice No", i.date as "Date" '
-                            ' , i.customer_code as "Customer Code", c.name as "Customer Name" '
-                            ' , i.due_date as "Due Date", i.total as "Total", i.vat as "VAT", i.amount_due as "Amount Due" '
-                            ' , ili.product_code as "Product Code", p.name as "Product Name" '
-                            ' , ili.quantity as "Quantity", ili.unit_price as "Unit Price", ili.extended_price as "Extended Price" '
-                            ' FROM invoice i JOIN customer c ON i.customer_code = c.customer_code '
-                            '  JOIN invoice_line_item ili ON i.invoice_no = ili.invoice_no '
-                            '  JOIN product p ON ili.product_code = p.code '
-                            ' ')
+    data, columns = db.fetch ('SELECT r.receipt_no as "Receipt No", r.date as "Date" '
+                              ' , r.customer_code as "Customer Code", c.name as "Customer Name", r.payment_code as "Payment Method", r.payment_ref as "Payment Reference" '
+                              ' , r.remarks as "Remarks", r.total_received as "Total Received"'
+                              ' , rli.invoice_no as "Invoice No"'
+                              ' , i.date as "Invoice Date", rli.amount_paid_here as "Amount Paid Here"'
+                              '  FROM receipt r '
+                              '  JOIN customer c ON r.customer_code = c.customer_code '
+                              '  JOIN receipt_line_item rli ON r.receipt_no = rli.receipt_no '
+                              '  JOIN invoice i ON rli.invoice_no = i.invoice_no ' )
+
+    data1, columns1 = db.fetch('SELECT rli.invoice_no as "Invoice No"'
+                              ' , i.date as "Invoice Date", rli.amount_paid_here as "Amount Paid Here"'
+                              '  FROM receipt r '
+                              '  JOIN customer c ON r.customer_code = c.customer_code '
+                              '  JOIN receipt_line_item rli ON r.receipt_no = rli.receipt_no '
+                              '  JOIN invoice i ON rli.invoice_no = i.invoice_no ' )
+
     data_report = dict()
     data_report['data'] = CursorToDict (data,columns)
+    data_report['data1'] = CursorToDict (data1,columns1)
     data_report['column_name'] = columns
 
-    return render(request, 'report_list_all_invoices.html', data_report)
+    return render(request, 'report_list_all_receipts.html', data_report)
+
+def ReportUnpaidInvoices(request):
+    db = DBHelper()
+    data, columns = db.fetch ('SELECT "Invoice No", i.date as "Invoice Date" '
+		                     '  , c.name as "Customer Name", i.amount_due AS "Invoice Amount Due" '
+		                     '  , "Invoice Amount Received", i.amount_due - "Invoice Amount Received" AS "Invoice Amount Not Paid" '
+                             ' FROM( SELECT rli.invoice_no as "Invoice No", SUM(rli.amount_paid_here) as "Invoice Amount Received" '
+	                         '  FROM receipt_line_item as rli '
+	                         '  GROUP BY rli.invoice_no ) as li '
+                             '  JOIN invoice as i '
+	                         '   ON li."Invoice No" = i.invoice_no '
+                             ' INNER JOIN customer as c '
+	                         '   ON i.customer_code = c.customer_code')
+
+    data1, columns1 = db.fetch ('SELECT SUM(i.amount_due - "Invoice Amount Received") AS "Total Dept" '
+                              'FROM(SELECT rli.invoice_no AS "Invoice No", SUM(rli.amount_paid_here) as "Invoice Amount Received" '
+	                          '  FROM receipt_line_item as rli '
+	                          ' GROUP BY rli.invoice_no ) as li '
+                              ' INNER JOIN invoice as i '
+	                          '  ON li."Invoice No" = i.invoice_no ')
+    
+    data_report = dict()
+    data_report['data'] = CursorToDict (data,columns)
+    data_report['data1'] = CursorToDict (data1,columns1)
+    data_report['column_name'] = columns
+
+    return render(request, 'report_unpaid_invoice.html', data_report)
 
 def ReportProductsSold(request):
-    db = DBHelper()
-    data, columns = db.fetch ('SELECT ili.product_code as "Product Code", p.name as "Product Name" '
-                              ' , SUM(ili.quantity) as "Total Quantity Sold", SUM(ili.extended_price) as "Total Value Sold" '
-                              ' FROM invoice i JOIN invoice_line_item ili ON i.invoice_no = ili.invoice_no '
-                              '   JOIN product p ON ili.product_code = p.code '
-                              ' GROUP BY p.code, ili.product_code, p.name '
-                            ' ')
-    data_report = dict()
-    data_report['data'] = CursorToDict (data,columns)
-    data_report['column_name'] = columns
-
-    return render(request, 'report_products_sold.html', data_report)
-
-def ReportListAllProducts(request):
     db = DBHelper()
     data, columns = db.fetch ('SELECT code as "Code", name as "Name", units as "Units" FROM product '
                               ' ')
