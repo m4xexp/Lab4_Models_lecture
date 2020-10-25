@@ -15,17 +15,9 @@
         <tbody>
             <tr>
                 <td>{{ forloop.counter }}</td>
-                <td>{{ lineitem.receipt_no }}</td>
                 <td>{{ lineitem.date }}</td>
-                <td>{{ lineitem.customer_code }}</td>
                 <td>{{ lineitem.customer_name }}</td>
-                <td>{{ lineitem.payment_code}}</td>
-                <td>{{ lineitem.payment_ref }}</td>
-                <td>{{ lineitem.remarks }}</td>
-                <td>{{ lineitem.total_received }}</td>
-                <td>{{ lineitem.invoice_no }}</td>
-                <td>{{ lineitem.invoice_date }}</td>
-                <td>{{ lineitem.amount_paid_here }}</td>
+                <td>{{ lineitem.invoice_amount_received }}</td>
             <tr>
         </tbody>
     {% endfor %}
