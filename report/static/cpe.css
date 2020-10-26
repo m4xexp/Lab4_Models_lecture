@@ -20,9 +20,6 @@ ul {
     text-decoration: none;
   }
 
-  a {
-    text-align: center;
-  }
 
   li.active {
     background-color:#693;

@@ -25,18 +25,21 @@
         </tbody>
     {% endfor %}
 
-    {% for lineitem in data1 %}
-    <tfoot>
+    <table class='footer'>
+       <thead>
         <tr>
-            <th>{{lineitem.list}}</th>
-            <th>Unpaid invoice</th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th>Total Dept</td>
-            <td>{{lineitem.total_dept}}</td>
+            {% for name in column_name1 %}
+            <th>{{ name }} </th>
+            {% endfor %}
         </tr>
-    </tfoot>
+       </thead>
+    {% for lineitem in data1 %}
+       <tbody>
+            <tr>
+                <td>{{lineitem.total}}</td>
+                <td>{{lineitem.total_unpaid_invoice}}</td>
+            </tr>
+       </tbody>
     {% endfor %}
 {% endblock %}
 
