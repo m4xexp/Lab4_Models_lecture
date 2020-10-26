@@ -55,11 +55,12 @@ def ReportUnpaidInvoices(request):
 
 def ReportDateProductSold(request):
     db = DBHelper()
-    data, columns = db.fetch (' SELECT i.date as "Date", p.name as "Product Name", SUM(ili.quantity) as "Total Sold", p.units as "Unit", '
+    data, columns = db.fetch (' SELECT i.date as "Date", p.code as "Product Code", p.name as "Product Name", '
+                              ' SUM(ili.quantity) as "Total Sold", p.units as "Unit", '
 		                      ' SUM(ili.extended_price) as "Total Extended Price"  '
                               ' FROM product p JOIN invoice_line_item ili ON p.code = ili.product_code '
 		                      ' JOIN invoice i ON i.invoice_no = ili.invoice_no '
-	                          ' GROUP BY i.date,p.name,p.units '
+	                          ' GROUP BY i.date,p.code,p.name,p.units '
                               ' ORDER BY i.date ASC ' 
                               '')
 

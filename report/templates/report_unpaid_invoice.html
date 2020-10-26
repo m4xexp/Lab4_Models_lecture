@@ -1,7 +1,6 @@
 {% extends 'index.html' %}
 
 {% block content %}
-    
     <table class='table'>
         <thead>
             <tr>
@@ -30,7 +29,7 @@
     <tfoot>
         <tr>
             <th>{{lineitem.list}}</th>
-            <th>Total unpaid invoice</th>
+            <th>Unpaid invoice</th>
             <th></th>
             <th></th>
             <th></th>
@@ -38,9 +37,7 @@
             <td>{{lineitem.total_dept}}</td>
         </tr>
     </tfoot>
-    
     {% endfor %}
-
 {% endblock %}
 
 </body>
